@@ -1,68 +1,104 @@
-# tab-navigating-system
-Am implementat un sistem de gestionare a istoricului unui
-browser. 
+Data Structures
+-> tabLink and tabsList
+The tabLink structure is used to navigate between browser tabs.
 
-DEFINIRE STRUCTURI:
-    Am ales sa implementez o structura "tabLink", care e folosita
-    pentru navigarea intre  tab-urile din lista dublu inlantuita de tip
-    "tabsList". Santinela (santi) face conexiunea dintre tabsList si tabLink.
 
-    De asemenea, am facut ceva similar si pentru stive, unde head o sa fie
-    ultimul element introdus in stiva (LIFO). Structura de tip "stackLink"
-    permite navigarea intre paginile din stive.
+All tabs are stored in a doubly linked list (tabsList).
 
-FUNCTII:
-    -> CREATE_PAG_IMP: Creeaza pagina implicita.
-    -> CREATE_TAB_ZERO: Creeaza tab-ul zero si face conexiunea cu santinela.
-    -> CREATE_SANTI: Creeaza santinela.
-    -> NEW_TAB: Creeaza un nou tab, alocandu-i memorie. Id-ul este calculat in
-        main, crescand de fiecare data cand se apeleaza functia new_tab.
-        Pagina curenta o sa fie pagina implicita, care este creata in functia
-        create_page_imp.
-    -> FREE_STACK: Elibereaza memoria alocata dinamic pentru elementele
-        din stiva si pentru stiva in sine.
-    -> CLOSE: Am parcurs incepand cu tab-ul 1, deoarece tab-ul 0 nu poate
-        sa fie sters niciodata (conditia de eroare). Am refacut link-urile
-        din lista si am eliberat memoria pentru tab-ul curent pentru a il
-        elimina.
-    -> OPEN_ID: Caut tab-ul cu ID-ul specificat prin parcurgerea listei.
-        Afisez mesaj de eroare daca nu-l gasesc, altfel actualizez tab-ul
-        curent.
-    -> NEXT: Parcurg lista pana ajung la ultimul element sau pana intalnesc 
-        tab-ul cu ID-ul tab-ului curent. Sar peste santinela in caz ca este
-        nevoie. Actualizez tab-ul curent cu cel de dupa.
-    -> PREV: Parcurg pana ajung la ultimul element sau pana cand tab-ul urmator
-        are ID-ul dorit. Actualizez tab-ul curent cu cel de dinaintea sa.
-    -> PAGE_ID: Am parcurs paginile, verificand daca ID-ul coincide. Daca
-        gasesc pagina cu ID-ul specificat, creez o copie pentru a o putea 
-        atribui ulterior ca pagina curenta. Aloc memorie cu malloc pentru un 
-        link nou ce va reprezenta pagina curenta in stiva backward si o 
-        introduc. Golesc stiva forward. Actualizez pagina curenta.
-    -> BACKWARD: Pastrez intr-o variabila pagina curenta (initiala pag).
-        Accesez ultima pagina adaugata in stiva backward (head), o scot din 
-        stiva si o fac pagina curenta. Introduc initiala pagina curenta in 
-        stiva forward.
-    -> FORWARD: Creez un link nou ce va reprezenta pagina curenta. O adaug
-        in stiva backward. Scot ultima pagina adaugata in stiva forward
-        si o fac pagina curenta.
-    -> RECURSIVE_PRINT: Printeaza elementele stivei incepand de la
-        primul adaugat. Am ales sa implementez o functie recursiva ca mi se 
-        parea cel mai facil mod de a face asta.
-    -> PRINT_HISTORY_ID: Parcurg lista, verificand daca exista tab-ul
-        cu ID-ul dorit. Daca exista, printez recursiv valorile (de la primul)
-        element adaugat din stiva forward. Apoi, printez URL-ul paginii
-        curente. Dupa, parcurg backwardStack si printez URL-urile paginilor.
-    -> PRINT: Afisez circular ID-urile tuturor taburilor deschise in browser, 
-        incepând de la tabul curent, spre dreapta si descrierea paginii 
-        curente. Sar peste santinela cand o intampin, trecand la tab 0.
 
-MAIN
-    -> Initializez variabilele, deschid fisierele de input si output.
-    Creez vectorul de pagini, santinela si tab-ul zero apeland functiile
-    specificate mai sus. Actualizez tab-ul curent ca fiind tab 0.
-    Citesc nr. de pagini si fiecare pagina in parte. Citesc nr. de comenzi
-    si le citesc pe fiecare in parte, eliminand newline-ul de la sfarsit
-    citit de functia fgets. Compar input-ul citit cu comenzile posibile
-    si apelez functia necesara.
+A sentinel node (santi) connects the tabsList and tabLink structures, simplifying traversal and ensuring consistent behavior at the list boundaries.
 
-    -> La final, eliberez memoria folosita.
+
+-> stackLink
+Each tab has two stacks: one for backward navigation and one for forward navigation.
+
+
+The head of a stack represents the most recently added element (LIFO).
+
+
+The stackLink structure allows navigation between pages within these stacks.
+
+Implemented Functions
+Initialization
+CREATE_SANTI() – Creates the sentinel node used to manage the tab list.
+
+
+CREATE_PAGE_IMP() – Creates the default (implicit) page.
+
+
+CREATE_TAB_ZERO() – Creates tab 0, initializes its default page, and links it to the sentinel.
+
+
+NEW_TAB() – Allocates memory for a new tab, assigns it a unique ID (incremented each time a new tab is created), and sets its current page to the default page created by CREATE_PAGE_IMP().
+
+
+Memory Management
+FREE_STACK() – Frees dynamically allocated memory for all elements in a stack and for the stack itself.
+
+
+CLOSE() – Removes a tab (except tab 0, which cannot be closed).
+ Traverses the tab list, relinks neighboring tabs to maintain list integrity, and frees the memory used by the closed tab.
+
+
+Navigation and Operations
+OPEN_ID() – Searches for a tab with the specified ID.
+ If found, sets it as the current tab; otherwise, prints an error message.
+
+
+NEXT() – Moves to the next tab in the list.
+ Skips over the sentinel if necessary. Updates the current tab to the one after the current.
+
+
+PREV() – Moves to the previous tab in the list.
+ Updates the current tab to the one before the current.
+
+
+PAGE_ID() – Searches for a page by ID.
+ If found, creates a copy to assign as the new current page, adds the previous page to the backward stack, clears the forward stack, and updates the current page.
+
+
+Backward/Forward Navigation
+BACKWARD() – Moves one step backward in history.
+ Saves the current page to the forward stack, pops the top page from the backward stack, and sets it as the new current page.
+
+
+FORWARD() – Moves one step forward in history.
+ Saves the current page to the backward stack, pops the top page from the forward stack, and sets it as the new current page.
+
+
+Printing
+RECURSIVE_PRINT() – Recursively prints the elements of a stack starting from the first page added.
+
+
+PRINT_HISTORY_ID() – Searches for a tab by ID and prints its entire history:
+ the forward stack (in order), the current page, and then the backward stack.
+
+
+PRINT() – Displays the IDs of all open tabs in a circular manner starting from the current tab and prints the description of the current page.
+ Skips the sentinel when encountered, continuing with tab 0.
+main Function Overview
+Initializes variables and opens the input/output files.
+
+
+Creates the vector of pages, the sentinel, and tab 0 using the initialization functions above.
+
+
+Sets the current tab to tab 0.
+
+
+Reads the number of pages and loads each page into memory.
+
+
+Reads and executes the sequence of commands from the input file:
+
+
+Each command is processed by comparing it to known commands and calling the corresponding function.
+
+
+Trailing newlines from input are removed using fgets.
+
+
+At the end, frees all dynamically allocated memory.
+
+
+
